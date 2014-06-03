@@ -1,13 +1,23 @@
 class MoviesController < ApplicationController
 
   def index
+    ratings={"R"=> 1,"G"=>1}
+    @all_ratings=get_ratings
+    
+    # sort
     if(params[:sort]=="title")
       @movies = sort_movies(:title)
     elsif(params[:sort]=="release_date")
       @movies = sort_movies(:release_date)
+    
+    #filter
+    elsif ratings.find_all{|key,value| value==1} 
+    @movies=filter_movies()
+
     else
       @movies = Movie.all
     end
+    
   end
 
   def show
@@ -54,6 +64,14 @@ class MoviesController < ApplicationController
 
   def sort_movies (param)
     Movie.order(param)
+  end
+
+  def get_ratings
+    Movie.select("rating").distinct
+  end
+  
+  def filter_movies 
+    Movie.where(rating: ratings[:rating].keys)
   end
 
 end
