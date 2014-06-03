@@ -11,7 +11,7 @@ class MoviesController < ApplicationController
       @movies = sort_movies(:release_date)
     
     #filter
-    elsif ratings.find_all{|key,value| value==1} 
+    elsif ratings.find_all{|key,value| value>0}.any? 
     @movies=filter_movies()
 
     else
