@@ -63,3 +63,6 @@ form label {
 table#movies th.highlight {
   background-color: yellow;
 }
+table#movies tr.even {
+  background-color: grey;
+}

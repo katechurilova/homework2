@@ -1,23 +1,11 @@
 class MoviesController < ApplicationController
+  helper_method :ratings_params, :all_ratings
 
   def index
-    ratings={"R"=> 1,"G"=>1}
-    @all_ratings=get_ratings
-    
-    # sort
-    if(params[:sort]=="title")
-      @movies = sort_movies(:title)
-    elsif(params[:sort]=="release_date")
-      @movies = sort_movies(:release_date)
-    
-    #filter
-    elsif ratings.find_all{|key,value| value>0}.any? 
-    @movies=filter_movies()
-
-    else
-      @movies = Movie.all
-    end
-    
+    @all_ratings = Movie.all_ratings
+    session[:sort_by] = params[:sort_by] if params[:sort_by]
+    session[:ratings] = params[:ratings] if params[:ratings]
+    @movies = Movie.where(rating: ratings_params.keys).order(session[:sort_by])    
   end
 
   def show
@@ -59,19 +47,15 @@ class MoviesController < ApplicationController
   end
 
   def movie_params
-    params[:movie].permit(:title, :rating, :release_date, :description, :sort)
-  end
-
-  def sort_movies (param)
-    Movie.order(param)
-  end
-
-  def get_ratings
-    Movie.select("rating").distinct
+    params[:movie].permit(:title, :rating, :release_date, :description)
   end
   
-  def filter_movies 
-    Movie.where(rating: ratings[:rating].keys)
+  def all_ratings
+    @all_ratings||= Movie.all_ratings
+  end
+
+  def ratings_params
+    session[:ratings] || Hash[@all_ratings.map {|x| [x, "1"]}]
   end
 
 end
