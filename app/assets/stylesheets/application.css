@@ -66,3 +66,6 @@ table#movies th.highlight {
 table#movies tr.even {
   background-color: grey;
 }
+table#movies tr.odd {
+  background-color: white;
+}

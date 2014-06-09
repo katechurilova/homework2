@@ -14,11 +14,13 @@
   <thead>
     <tr>
       <th class="<%= 'highlight' if session[:sort_by] == 'title' %>">
-        <%= link_to "Movie Title", movies_path(sort_by: 'title') %>
+        
+        <%= sortable 'title', "Movie title" %>
       </th>
       <th>Rating</th>
       <th class="<%= 'highlight' if session[:sort_by] == 'release_date' %>">
-        <%= link_to "Release Date", movies_path(sort_by: 'release_date') %>
+        
+        <%= sortable 'release_date', "Release date" %>
       </th>
       <th>More Info</th>
     </tr>
@@ -26,7 +28,7 @@
   <tbody>
   
     <% @movies.each do |movie| %>
-      <tr class="<%= 'even' if movie.id%2==0 %>"> 
+      <tr class="<%= cycle('odd', 'even') %>"> 
         <td><%= link_to "#{movie.title}", movie %></td>
         <td><%= movie.rating %></td>
         <td><%= movie.release_date %></td>

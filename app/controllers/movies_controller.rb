@@ -5,7 +5,7 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.all_ratings
     session[:sort_by] = params[:sort_by] if params[:sort_by]
     session[:ratings] = params[:ratings] if params[:ratings]
-    @movies = Movie.where(rating: ratings_params.keys).order(session[:sort_by])    
+    @movies = Movie.where(rating: ratings_params.keys).order("#{session[:sort_by]}" + ' ' + "#{params[:direction]}")    
   end
 
   def show
