@@ -1,4 +1,6 @@
+
 class Movie < ActiveRecord::Base
+  mount_uploader :picture, PictureUploader
   validates :title, presence: true
   validates :rating, presence: true,
                      inclusion: {in: ['G','PG','PG-13','R', 'NC-17'], allow_blank: true }

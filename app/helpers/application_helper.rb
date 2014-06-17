@@ -1,4 +1,5 @@
 module ApplicationHelper
+  
 	def sortable(column, title = nil)
     title ||= column.titleize
     direction = (column == params[:sort_by] && params[:direction] == "ASC") ? "DESC" : "ASC"

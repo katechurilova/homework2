@@ -1,4 +1,5 @@
 class MoviesController < ApplicationController
+  before_action :authorize
   helper_method :ratings_params, :all_ratings, :order_where
 
   def index
@@ -51,7 +52,7 @@ class MoviesController < ApplicationController
   end
 
   def movie_params
-    params[:movie].permit(:title, :rating, :release_date, :description)
+    params[:movie].permit(:title, :rating, :release_date, :description, :picture)
   end
 
   def ratings_params
