@@ -29,10 +29,11 @@
   
     <% @movies.each do |movie| %>
       <tr class="<%= cycle('odd', 'even') %>"> 
-        <td><%= link_to "#{movie.title}", movie %></td>
+        <td><%= link_to "#{movie.title}", movie %><%= image_tag(movie.picture.thumb.url) %></td>
         <td><%= movie.rating %></td>
         <td><%= movie.release_date %></td>
         <td><%= movie.description[0..20] %> <%= link_to "More..", movie_path(movie) %></td>
+
       </tr>
     <% end %>
   </tbody>
