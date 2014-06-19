@@ -28,9 +28,10 @@ gem 'spring',        group: :development
 gem 'tzinfo-data'
 gem 'rspec-rails'
 gem 'clearance'
-#gem "rmagick"
+
 gem 'carrierwave'
 gem 'mini_magick'
+gem "cancan"
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

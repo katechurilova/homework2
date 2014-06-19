@@ -69,4 +69,10 @@ table#movies tr.even {
 table#movies tr.odd {
   background-color: white;
 }
+ul#details li.mine {
+  background-color: yellow;
+}
+table#movies tr.mine {
+  background-color: yellow;
+}
 

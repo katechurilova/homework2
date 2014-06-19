@@ -3,18 +3,25 @@ class MoviesController < ApplicationController
   helper_method :ratings_params, :all_ratings, :order_where
 
   def index
+    
     @all_ratings = Movie.all_ratings
-
     session[:sort_by] = params[:sort_by] if params[:sort_by]
     session[:ratings] = params[:ratings] if params[:ratings]
   
-    @movies = Movie.order_where(ratings_params.keys, "#{session[:sort_by]}" + ' ' + "#{params[:direction]}")    
-    #@movies = Movie.where(rating: ratings_params.keys).order("#{session[:sort_by]}" + ' ' + "#{params[:direction]}")    
-  
+    @movies = Movie.order_where(ratings_params.keys, "#{session[:sort_by]}" + ' ' + "#{params[:direction]}") 
+      #is movie mine?
+      #if(@movie.user_id == current_user.id)
+      #@movie.mine=true
+      #end
   end
 
   def show
     @movie = find_movie
+    @user=User.select("email").where(id:"#{@movie.user_id}").distinct.pluck("email")
+      #is movie mine?
+      if(@movie.user_id == current_user.id)
+      @mine=true
+      end
   end
 
   def new
@@ -23,8 +30,14 @@ class MoviesController < ApplicationController
 
   def create
     @movie = Movie.create! movie_params
-    flash[:notice] = "#{@movie.title} was successfully created."
-    redirect_to movies_url
+    @movie.user_id = current_user.id
+    authorize! :all, @movie
+    if @movie.save
+      flash[:notice] = "#{@movie.title} was successfully created."
+      redirect_to movies_url
+    else
+      render 'new'
+    end
   end
 
   def edit
@@ -33,6 +46,7 @@ class MoviesController < ApplicationController
 
   def update
     @movie = find_movie
+    authorize! :all, @movies
     @movie.update_attributes!(movie_params)
     flash[:notice] = "#{@movie.title} was successfully updated."
     redirect_to @movie
@@ -40,6 +54,7 @@ class MoviesController < ApplicationController
 
   def destroy
     @movie = find_movie
+    authorize! :all, @movies
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_url
@@ -57,7 +72,7 @@ class MoviesController < ApplicationController
 
   def ratings_params
     session[:ratings] || Hash[@all_ratings.map {|x| [x, "1"]}]
-  end   
+  end  
 
 end
 

@@ -28,12 +28,17 @@
   <tbody>
   
     <% @movies.each do |movie| %>
-      <tr class="<%= cycle('odd', 'even') %>"> 
-        <td><%= link_to "#{movie.title}", movie %><%= image_tag(movie.picture.thumb.url) %></td>
+      <%if movie.user_id==current_user.id%>
+      <tr class="<%= 'mine' %>">
+      <%else%>
+      <tr class="<%= cycle('odd', 'even')%>">
+      <%end%>
+      
+        <td><%= link_to "#{movie.title}", movie %><%= image_tag(movie.picture.thumb.url)%></td>
         <td><%= movie.rating %></td>
         <td><%= movie.release_date %></td>
         <td><%= movie.description[0..20] %> <%= link_to "More..", movie_path(movie) %></td>
-
+        
       </tr>
     <% end %>
   </tbody>
