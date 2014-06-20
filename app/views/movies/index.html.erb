@@ -28,7 +28,7 @@
   <tbody>
   
     <% @movies.each do |movie| %>
-      <%if movie.user_id==current_user.id%>
+      <%if movie.user_id == current_user.id%>
       <tr class="<%= 'mine' %>">
       <%else%>
       <tr class="<%= cycle('odd', 'even')%>">
@@ -38,7 +38,6 @@
         <td><%= movie.rating %></td>
         <td><%= movie.release_date %></td>
         <td><%= movie.description[0..20] %> <%= link_to "More..", movie_path(movie) %></td>
-        
       </tr>
     <% end %>
   </tbody>

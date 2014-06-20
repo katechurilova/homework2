@@ -3,16 +3,21 @@
 <ul id="details">
   <li>Rating: <%= @movie.rating %></li>
   <li>Released on: <%= @movie.release_date %></li>
-  <li class="<%= 'mine' if @mine==true %>">Author: <%= @user %></div></li>
+  <li class="<%= 'mine' if @mine==true %>">Author: <%= @user_name %></li>
 </ul>
 
 <h3>Description</h3>
-
 <p class="description"><%= @movie.description %></p>
 
- <h3>Picture</h3>
- <%= image_tag(@movie.picture_url) if @movie.picture? %>
+<h3>Picture</h3>
+<%= image_tag(@movie.picture_url) if @movie.picture? %>
 
+<h3> <%= @published %> </h3>
+
+
+<% if @user.admin?||@movie.user_id == current_user.id%>
 <%= link_to "Edit", [:edit, @movie] %>
 <%= button_to "Delete", @movie, method: :delete, data: { confirm: "Are you sure?" } %>
+<%end%>
+
 <%= link_to "Back to movie list", movies_path %>
