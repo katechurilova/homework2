@@ -1,8 +1,9 @@
 class MoviesController < ApplicationController
   before_action :authorize
-  helper_method :ratings_params, :all_ratings, :order_where
+  helper_method :ratings_params, :all_ratings, :order_where, :generate_twin_id
 
   def index
+    can? :read, @movie
     @all_ratings = Movie.all_ratings
     session[:sort_by] = params[:sort_by] if params[:sort_by]
     session[:ratings] = params[:ratings] if params[:ratings]
@@ -11,30 +12,31 @@ class MoviesController < ApplicationController
 
   def show
     @movie = find_movie
-    
-    @user = User.where(id:"#{@movie.user_id}") 
-    @user_name = User.select("email").where(id:"#{@movie.user_id}").distinct.pluck("email")
+    can? :read, @movie
+    @user_name=User.select("email").where(id:"#{@movie.user_id}").distinct.pluck("email")
+    @user_admin=User.select("admin").where(id:"#{current_user.id}").distinct.pluck("admin")
       #is movie mine?
       if(@movie.user_id == current_user.id)
         @mine = true
       end
       if(@movie.published)
-        @published = "Published " + @movie.updated_at.to_s
+        @published = "Published "
       else
         @published = "Draft"
       end
   end
 
   def new
+    can? :create, @movie
     @movie = Movie.new
-    authorize! :all, @movie
   end
 
   def create
+    can? :create, @movie
     @movie = Movie.create! movie_params
     @movie.user_id = current_user.id
     @movie.published = false
-    authorize! :all, @movie
+    
     if @movie.save
       flash[:notice] = "#{@movie.title} was successfully created."
       redirect_to movies_url
@@ -45,20 +47,38 @@ class MoviesController < ApplicationController
 
   def edit
     @movie = find_movie
-    authorize! :all, @movie
   end
 
   def update
     @movie = find_movie
-    authorize! :all, @movies
-    @movie.update_attributes!(movie_params)
-    @movie.update!(published: 'true')
-    flash[:notice] = "#{@movie.title} was successfully updated."
+    can? :update, @movie
+    @movie.attributes = movie_params
+    if @movie.valid?
+      if @movie.published?
+          Movie.create!Movie.find(@movie.id).attributes.except('id', 'created_at', 'updated_at') 
+          @movie.published = false
+      end
+      @movie.save
+      flash[:notice] = "#{@movie.title} was successfully updated."
+      redirect_to @movie
+    else
+      render 'edit'
+    end
+  end
+
+  def publish
+    @movie = find_movie
+    can? :update, @movie
+    #@movie_old=Movie.find(twin_id:(@movie.twin_id).to_s, published: 'true')
+    #@movie_old.destroy
+    @movie.update_column :published, true
+    @published = "Published "
     redirect_to @movie
   end
 
   def destroy
     @movie = find_movie
+    can? :destroy, @movie
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_url
@@ -71,12 +91,14 @@ class MoviesController < ApplicationController
   end
 
   def movie_params
-    params[:movie].permit(:title, :rating, :release_date, :description, :picture)
+    fields = [:title, :rating, :release_date, :description, :twin_id]
+    fields += [:published] if current_user.admin?
+    params.require(:movie).permit(fields)
   end
 
   def ratings_params
     session[:ratings] || Hash[@all_ratings.map {|x| [x, "1"]}]
   end  
-
+  
 end
 

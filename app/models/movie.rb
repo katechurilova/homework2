@@ -7,6 +7,8 @@ class Movie < ActiveRecord::Base
                      inclusion: {in: ['G','PG','PG-13','R', 'NC-17'], allow_blank: true }
   validates :release_date, presence: { message: "looks bad"}
 
+  before_validation :generate_twin_id, on: :create
+
   def self.all_ratings
    Movie.select(:rating).distinct.pluck(:rating)
    #@all_ratings = %W[G PG PG-13 NC-17 R]
@@ -16,4 +18,8 @@ class Movie < ActiveRecord::Base
   Movie.where(rating: selected_ratings).order(order_params)    
   end
 
+  def generate_twin_id
+  self.twin_id = SecureRandom.uuid
+  end
+  
 end

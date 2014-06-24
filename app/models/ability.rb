@@ -8,7 +8,7 @@ class Ability
        if user.admin?
          can :manage, :all
        else
-         can :read, Movie, :published => true
+         can :read, Movie, :published => true 
          can :read, Movie, :published => false, :user_id => user.id
          alias_action :create, :update, :destroy, :to => :crud
          can :crud, Movie, :user_id => user.id

@@ -23,11 +23,13 @@
         <%= sortable 'release_date', "Release date" %>
       </th>
       <th>More Info</th>
+      <th>Published</th>
     </tr>
   </thead>
   <tbody>
   
     <% @movies.each do |movie| %>
+    <%if current_user.id==3||movie.published||movie.user_id == current_user.id%>
       <%if movie.user_id == current_user.id%>
       <tr class="<%= 'mine' %>">
       <%else%>
@@ -38,8 +40,14 @@
         <td><%= movie.rating %></td>
         <td><%= movie.release_date %></td>
         <td><%= movie.description[0..20] %> <%= link_to "More..", movie_path(movie) %></td>
+        <%if movie.published?%>
+          <td>Published</td>
+        <%else%>
+          <td>Draft</td>
+        <%end%>
       </tr>
-    <% end %>
+      <%end%>
+    <%end%>
   </tbody>
 </table>
 

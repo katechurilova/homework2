@@ -15,9 +15,17 @@
 <h3> <%= @published %> </h3>
 
 
-<% if @user.admin?||@movie.user_id == current_user.id%>
-<%= link_to "Edit", [:edit, @movie] %>
+<%if can? :update, @movie%>
+  <%= link_to "Edit", [:edit, @movie] %>
+<%end%>
+
+<%if @user_admin[0]==true%>
+  <%= button_to "Publish", [:publish, @movie], method: :patch, data: { confirm: "Are you sure?" } if !@movie.published? %>
+<%end%>
+
+<%if can? :destroy, @movie%>
 <%= button_to "Delete", @movie, method: :delete, data: { confirm: "Are you sure?" } %>
 <%end%>
+
 
 <%= link_to "Back to movie list", movies_path %>
