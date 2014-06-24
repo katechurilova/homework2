@@ -3,11 +3,11 @@ class MoviesController < ApplicationController
   helper_method :ratings_params, :all_ratings, :order_where, :generate_twin_id
 
   def index
-    can? :read, @movie
     @all_ratings = Movie.all_ratings
     session[:sort_by] = params[:sort_by] if params[:sort_by]
     session[:ratings] = params[:ratings] if params[:ratings]
     @movies = Movie.order_where(ratings_params.keys, "#{session[:sort_by]}" + ' ' + "#{params[:direction]}") 
+    @movies = @movies.where("user_id=? or published=?",current_user.id, true) unless (current_user.admin?)
   end
 
   def show
@@ -69,8 +69,8 @@ class MoviesController < ApplicationController
   def publish
     @movie = find_movie
     can? :update, @movie
-    #@movie_old=Movie.find(twin_id:(@movie.twin_id).to_s, published: 'true')
-    #@movie_old.destroy
+    @movie_old=Movie.where('twin_id = ? and published = ?', @movie.twin_id, true)
+    @movie_old.last.destroy if (@movie_old.exists?)
     @movie.update_column :published, true
     @published = "Published "
     redirect_to @movie
@@ -91,7 +91,7 @@ class MoviesController < ApplicationController
   end
 
   def movie_params
-    fields = [:title, :rating, :release_date, :description, :twin_id]
+    fields = [:title, :rating, :release_date, :description, :picture, :twin_id]
     fields += [:published] if current_user.admin?
     params.require(:movie).permit(fields)
   end

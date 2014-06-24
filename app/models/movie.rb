@@ -19,7 +19,7 @@ class Movie < ActiveRecord::Base
   end
 
   def generate_twin_id
-  self.twin_id = SecureRandom.uuid
+  self.twin_id = SecureRandom.uuid unless self.twin_id
   end
   
 end

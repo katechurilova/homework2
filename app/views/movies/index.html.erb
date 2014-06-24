@@ -29,7 +29,7 @@
   <tbody>
   
     <% @movies.each do |movie| %>
-    <%if current_user.id==3||movie.published||movie.user_id == current_user.id%>
+    
       <%if movie.user_id == current_user.id%>
       <tr class="<%= 'mine' %>">
       <%else%>
@@ -47,7 +47,7 @@
         <%end%>
       </tr>
       <%end%>
-    <%end%>
+    
   </tbody>
 </table>
 
