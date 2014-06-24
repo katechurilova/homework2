@@ -20,7 +20,7 @@
 <%end%>
 
 <%if @user_admin[0]==true%>
-  <%= button_to "Publish", [:publish, @movie], method: :patch, data: { confirm: "Are you sure?" } if !@movie.published? %>
+  <%= button_to "Publish", [:publish, @movie], method: :patch, data: { confirm: "Are you sure?" } unless @movie.published? %>
 <%end%>
 
 <%if can? :destroy, @movie%>
